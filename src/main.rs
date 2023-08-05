@@ -12,6 +12,12 @@ mod ray3;
 mod sphere;
 use sphere::Sphere;
 
+mod hittable;
+use hittable::Hittable;
+
+mod hittable_list;
+use hittable_list::HittableList;
+
 fn main() {
     // Image
     let aspect_ratio = 16.0 / 9.0;
