@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, ops::AddAssign};
 use std::io::Write;
 
 mod vector3;
@@ -6,7 +6,7 @@ use vector3::{Color, Vector3, Point3};
 mod color;
 use color::write_color;
 
-use crate::ray3::{Ray3, ray_color};
+use crate::{ray3::{Ray3, ray_color}, util::random_double};
 mod ray3;
 
 mod sphere;
@@ -18,6 +18,11 @@ use hittable::Hittable;
 mod hittable_list;
 use hittable_list::HittableList;
 
+mod camera;
+use camera::Camera;
+
+mod util;
+
 fn main() {
     // Image
     let aspect_ratio = 16.0 / 9.0;
@@ -26,15 +31,7 @@ fn main() {
     println!("image_width: {}, image_height: {}", image_width, image_height);
 
     // Camera, 位置在原点,朝向为负Z轴
-    let viewport_height = 2.0;
-    let viewport_width = aspect_ratio * viewport_height;
-    let focal_length = 1.0;// 焦距，也就是相机距离viewport的距离
-
-    let origin = Point3::new(0.0, 0.0, 0.0);
-    let horizontal = Vector3::new(viewport_width, 0.0, 0.0);
-    let vertical = Vector3::new(0.0, viewport_height, 0.0);
-    // viewport 的左下角
-    let lower_left_corner = origin - horizontal / 2.0 - vertical / 2.0 - Vector3::new(0.0, 0.0, focal_length);
+    let camera = Camera::new(aspect_ratio);
 
     // World
     let mut world = HittableList::new();
@@ -45,30 +42,29 @@ fn main() {
     // Render
 
     let file_name = "image.ppm";
-
     let mut file = fs::File::create(file_name).unwrap();
-
     // write ppm file header
     writeln!(&file, "P3").unwrap();
     writeln!(&file, "{} {}", image_width, image_height).unwrap();
     writeln!(&file, "255").unwrap();
 
 
+    let sample_count = 100;
     // write color 
     for  y in (0..image_height).rev() {
         print!("\rProgress: [{}%]", (image_height-y)/image_height*100); 
 
         for x in 0..image_width {
-            // let r = x as f32 / image_width as f32;
-            // let g = y as f32 / image_height as f32;
-            // let b = 0.25;
-            // let color = Color::new(r, g, b);
-            // write_color(&mut file, color);
-            let u = x as f32 / (image_width-1) as f32;
-            let v = y as f32 / (image_height-1) as f32;
-            let ray = Ray3::new(origin, lower_left_corner + horizontal*u + vertical*v);
+            let mut color: Color = Color::new(0.0, 0.0, 0.0);
+            for _ in 0..sample_count {
+                let u = ((x as f32) + util::random_double()) / (image_width-1) as f32;
+                let v = (y as f32 + util::random_double()) / (image_height-1) as f32;
+                let ray = camera.get_ray(u, v);
 
-            write_color(&mut file, ray_color(&ray, &world));
+                color += ray_color(&ray, &world)
+            }
+            
+            write_color(&mut file, color, sample_count);
         }
     }
 }
