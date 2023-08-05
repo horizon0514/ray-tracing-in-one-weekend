@@ -1,8 +1,8 @@
-use crate::vector3::{Point3, Vector3, Color};
+use crate::{vector3::{Point3, Vector3, Color}, sphere::Sphere};
 
 pub struct Ray3 {
-    origin: Point3,
-    direction: Vector3,
+    pub origin: Point3,
+    pub direction: Vector3,
 }
 
 impl Ray3 {
@@ -18,7 +18,11 @@ impl Ray3 {
     }
 }
 
-pub fn ray_color(ray: &Ray3) -> Color {
+pub fn ray_color(ray: &Ray3, sphere: &Sphere) -> Color {
+    // 如果射线命中了球,就返回球的颜色，这里设为红色
+    if sphere.is_hit(ray) {
+        return Color::new(1.0, 0.0, 0.0);
+    }
     let unit_direction = ray.direction.unit_vector();
 
     let white_color = Color::new(1.0, 1.0, 1.0);

@@ -9,6 +9,9 @@ use color::write_color;
 use crate::ray3::{Ray3, ray_color};
 mod ray3;
 
+mod sphere;
+use sphere::Sphere;
+
 fn main() {
     // Image
     let aspect_ratio = 16.0 / 9.0;
@@ -28,6 +31,7 @@ fn main() {
     let lower_left_corner = origin - horizontal / 2.0 - vertical / 2.0 - Vector3::new(0.0, 0.0, focal_length);
 
     // Render
+    let sphere = Sphere::new(Vector3 { x: 0.0, y: 0.0, z: -1.0 }, 0.5);
 
     let file_name = "image.ppm";
 
@@ -53,7 +57,7 @@ fn main() {
             let v = y as f32 / (image_height-1) as f32;
             let ray = Ray3::new(origin, lower_left_corner + horizontal*u + vertical*v);
 
-            write_color(&mut file, ray_color(&ray));
+            write_color(&mut file, ray_color(&ray, &sphere));
         }
     }
 }
