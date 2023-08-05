@@ -36,8 +36,13 @@ fn main() {
     // viewport 的左下角
     let lower_left_corner = origin - horizontal / 2.0 - vertical / 2.0 - Vector3::new(0.0, 0.0, focal_length);
 
-    // Render
+    // World
+    let mut world = HittableList::new();
     let sphere = Sphere::new(Vector3 { x: 0.0, y: 0.0, z: -1.0 }, 0.5);
+    let ground = Sphere::new(Vector3 { x: 0.0, y: -100.5, z: -1.0 }, 100.0);
+    world.add(Box::new(sphere));
+    world.add(Box::new(ground));
+    // Render
 
     let file_name = "image.ppm";
 
@@ -63,7 +68,7 @@ fn main() {
             let v = y as f32 / (image_height-1) as f32;
             let ray = Ray3::new(origin, lower_left_corner + horizontal*u + vertical*v);
 
-            write_color(&mut file, ray_color(&ray, &sphere));
+            write_color(&mut file, ray_color(&ray, &world));
         }
     }
 }

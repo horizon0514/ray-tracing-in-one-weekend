@@ -1,4 +1,4 @@
-use crate::{vector3::{Point3, Vector3, Color}, sphere::Sphere};
+use crate::{vector3::{Point3, Vector3, Color}, sphere::Sphere, hittable_list::HittableList, hittable::Hittable};
 
 pub struct Ray3 {
     pub origin: Point3,
@@ -18,11 +18,9 @@ impl Ray3 {
     }
 }
 
-pub fn ray_color(ray: &Ray3, sphere: &Sphere) -> Color {
-    // 如果射线命中了球,就返回球的颜色
-    let parameter = sphere.hit_parameter(ray);
-    if parameter > 0.0 {
-        let normal = (ray.at(parameter) - sphere.center).unit_vector();
+pub fn ray_color(ray: &Ray3, world: &HittableList) -> Color {
+    if let Some(rec) = world.hit(ray, 0.0, f32::INFINITY) {
+        let normal = rec.normal;
         // normal 的xyz在[-1,1]， 所以需要+1并且/2 映射到[0,1]
         return Color::new(normal.x + 1.0, normal.y + 1.0, normal.z + 1.0) * 0.5;
     }
