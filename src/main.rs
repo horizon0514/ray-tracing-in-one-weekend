@@ -50,6 +50,7 @@ fn main() {
 
 
     let sample_count = 100;
+    let max_depth = 50;
     // write color 
     for  y in (0..image_height).rev() {
         print!("\rProgress: [{}%]", (image_height-y)/image_height*100); 
@@ -61,7 +62,7 @@ fn main() {
                 let v = (y as f32 + util::random_double()) / (image_height-1) as f32;
                 let ray = camera.get_ray(u, v);
 
-                color += ray_color(&ray, &world)
+                color += ray_color(&ray, &world, max_depth);
             }
             
             write_color(&mut file, color, sample_count);

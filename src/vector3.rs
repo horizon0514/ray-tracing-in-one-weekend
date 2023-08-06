@@ -4,6 +4,8 @@ use std::ops::Mul;
 use std::ops::Div;
 use std::ops::AddAssign;
 
+use crate::util;
+
 pub type Point3 = Vector3;
 pub type Color = Vector3;
 
@@ -40,6 +42,25 @@ impl Vector3 {
             x: self.y * other.z - self.z * other.y,
             y: self.z * other.x - self.x * other.z,
             z: self.x * other.y - self.y * other.x,
+        }
+    }
+
+    pub fn random() -> Vector3 {
+        Vector3 { x: util::random_double(), y: util::random_double(), z: util::random_double() }
+    }
+
+    pub fn random_in_range(min: f32, max: f32) -> Vector3 {
+        Vector3 { x: util::random_double_range(min, max), y: util::random_double_range(min, max), z: util::random_double_range(min, max) }
+    }
+
+    pub fn random_unit_vector() -> Vector3 {
+        loop {
+            let v = Vector3::random_in_range(-1.0, 1.0);
+            if v.length_squared() >= 1.0 {
+                continue;
+            }
+
+            return v;
         }
     }
 }
