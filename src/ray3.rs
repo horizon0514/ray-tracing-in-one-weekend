@@ -24,7 +24,7 @@ pub fn ray_color(ray: &Ray3, world: &HittableList, max_depth: u32) -> Color {
         return Color::new(0.0, 0.0, 0.0);
     }
 
-    if let Some(rec) = world.hit(ray, 0.0, f32::INFINITY) {
+    if let Some(rec) = world.hit(ray, 0.0001, f32::INFINITY) {
         // 如果命中，则继续构造射线，并且递归计算颜色
         // P + N 得到单位球的球心，再叠加单位球坐标系下的任意内部点， 最终得到世界坐标系下的点 S
         let target = rec.point + rec.normal + Vector3::random_unit_vector();
