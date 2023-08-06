@@ -60,7 +60,7 @@ impl Vector3 {
                 continue;
             }
 
-            return v;
+            return v.unit_vector();
         }
     }
 }
