@@ -1,3 +1,4 @@
+use crate::vector3::Vector3;
 use crate::{vector3::Point3, ray3::Ray3};
 use crate::hittable::{Hittable, HitRecord};
 
@@ -10,6 +11,22 @@ impl Sphere {
     pub fn new(center: Point3, radius: f32) -> Sphere {
         Sphere { center, radius }
     }
+
+    /**
+     * 以原点为球心，在半单位球体内随机返回一个单位向量
+     * @param point
+     * @param normal 半球体的法线
+     */
+    pub fn random_in_hemisphere(normal: &Vector3) -> Vector3 {
+        let in_unit_sphere = Vector3::random_unit_vector();
+        let cos_theta = in_unit_sphere.dot(*normal);
+        if cos_theta > 1.0 {
+            in_unit_sphere
+        } else {
+            in_unit_sphere * (-1.0)
+        }
+
+    } 
 
     pub fn is_hit(&self, ray: &Ray3) -> bool {
         let oc = ray.origin - self.center;
