@@ -3,13 +3,15 @@ use crate::ray3::Ray3;
 /**
  * 相交记录
  */
-pub struct HitRecord {
+#[derive(Debug)]
+pub struct HitRecord<M> {
     pub t: f32,
     pub point: Point3,
     pub normal: Vector3,
     pub is_front_face: bool,
+    pub material: M,
 }
 
-pub trait Hittable {
-    fn hit(&self, ray: &Ray3, t_min: f32, t_max: f32) -> Option<HitRecord>;
+pub trait Hittable<M> {
+    fn hit(&self, ray: &Ray3, t_min: f32, t_max: f32) -> Option<HitRecord<M>>;
 }

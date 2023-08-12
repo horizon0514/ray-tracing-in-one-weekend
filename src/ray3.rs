@@ -1,4 +1,4 @@
-use crate::{vector3::{Point3, Vector3, Color}, sphere::Sphere, hittable_list::HittableList, hittable::Hittable};
+use crate::{vector3::{Point3, Vector3, Color}, sphere::Sphere, hittable_list::HittableList, hittable::Hittable, material::{self, Material}};
 
 pub struct Ray3 {
     pub origin: Point3,
@@ -18,7 +18,7 @@ impl Ray3 {
     }
 }
 
-pub fn ray_color(ray: &Ray3, world: &HittableList, max_depth: u32) -> Color {
+pub fn ray_color<M: Material>(ray: &Ray3, world: &HittableList<M>, max_depth: u32) -> Color {
     // 如果超过最大深度则返回黑色
     if max_depth == 0 {
         return Color::new(0.0, 0.0, 0.0);
@@ -28,10 +28,13 @@ pub fn ray_color(ray: &Ray3, world: &HittableList, max_depth: u32) -> Color {
         // 如果命中，则继续构造射线，并且递归计算颜色
         // 以rec.point 为单位球球心，以rec.normal 为单位球法线，构造一个半球体
         // 并随机选择一个单位向量
-        let target = rec.point + Sphere::random_in_hemisphere(&rec.normal);
-        // 继续构造反射的ray,并递归计算颜色
-        let r = ray_color(&Ray3::new(rec.point, target - rec.point), world, max_depth - 1);
-        return r * 0.5; // 光线强度衰减50%。在光追中,颜色值代表了光线的强度，而更高的颜色值,代表更强的光线强度
+        // let target = rec.point + Sphere::random_in_hemisphere(&rec.normal);
+
+
+        if let Some(scattered) = &rec.material.scatter(ray, &rec) {
+            return scattered.attenuation * ray_color(&scattered.scattered, world, max_depth - 1);
+        }
+        return Color::new(0.0, 0.0, 0.0);
     }
 
     let unit_direction = ray.direction.unit_vector();

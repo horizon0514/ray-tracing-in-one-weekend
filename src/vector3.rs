@@ -45,6 +45,11 @@ impl Vector3 {
         }
     }
 
+    pub fn near_zero(&self) -> bool {
+        let s = 1e-8;
+        self.x.abs() < s && self.y.abs() < s && self.z.abs() < s
+    }
+
     pub fn random() -> Vector3 {
         Vector3 { x: util::random_double(), y: util::random_double(), z: util::random_double() }
     }
@@ -102,6 +107,17 @@ impl Mul<f32> for Vector3 {
             x: self.x * scalar,
             y: self.y * scalar,
             z: self.z * scalar,
+        }
+    }
+}
+
+impl Mul<Vector3> for Vector3 {
+    type Output = Vector3; // 此处返回类型为Vector3，与self一致，可以省略
+    fn mul(self, other: Vector3) -> Vector3 {
+        Vector3 {
+            x: self.x * other.x,
+            y: self.y * other.y,
+            z: self.z * other.z,
         }
     }
 }

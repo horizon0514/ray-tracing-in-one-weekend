@@ -23,6 +23,9 @@ use camera::Camera;
 
 mod util;
 
+mod material;
+use material::{ Lambertian, Metal };
+
 fn main() {
     // Image
     let aspect_ratio = 16.0 / 9.0;
@@ -33,11 +36,30 @@ fn main() {
     // Camera, 位置在原点,朝向为负Z轴
     let camera = Camera::new(aspect_ratio);
 
+    // Material
+    let material_ground = Lambertian {
+        albedo: Color::new(0.8, 0.8, 0.0),
+    };
+    let material_center = Lambertian {
+        albedo: Color::new(0.7, 0.3, 0.3),
+    };
+    let material_left = Metal {
+        albedo: Color::new(0.8, 0.8, 0.8),
+    };
+    let material_right = Metal {
+        albedo: Color::new(0.8, 0.6, 0.2),
+    };
+
     // World
     let mut world = HittableList::new();
-    let sphere = Sphere::new(Vector3 { x: 0.0, y: 0.0, z: -1.0 }, 0.5);
-    let ground = Sphere::new(Vector3 { x: 0.0, y: -100.5, z: -1.0 }, 100.0);
-    world.add(Box::new(sphere));
+    let ground = Sphere::new(Vector3 { x: 0.0, y: -100.5, z: -1.0 }, 100.0, &material_ground);
+    let sphere_center = Sphere::new(Vector3 { x: 0.0, y: 0.0, z: -1.0 }, 0.5, &material_center);
+    let sphere_left = Sphere::new(Vector3 { x: -1.0, y: 0.0, z: -1.0 }, 0.5, &material_left);
+    let sphere_right = Sphere::new(Vector3 { x: 1.0, y: 0.0, z: -1.0 }, 0.5, &material_right);
+    
+    world.add(Box::new(sphere_center));
+    world.add(Box::new(sphere_left));
+    world.add(Box::new(sphere_right));
     world.add(Box::new(ground));
     // Render
 
