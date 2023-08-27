@@ -1,15 +1,17 @@
-use crate::vector3::Vector3;
+use crate::material::Material;
+use crate::vector3::{Vector3, random_unit_vector};
 use crate::{vector3::Point3, ray3::Ray3};
 use crate::hittable::{Hittable, HitRecord};
 
-pub struct Sphere {
+pub struct Sphere<M: Material> {
     pub center: Point3,
     pub radius: f32,
+    pub material: M,
 }
 
-impl Sphere {
-    pub fn new(center: Point3, radius: f32) -> Sphere {
-        Sphere { center, radius }
+impl<M: Material> Sphere<M> {
+    pub fn new(center: Point3, radius: f32, material: M) -> Sphere<M> {
+        Sphere { center, radius, material }
     }
 
     /**
@@ -18,7 +20,7 @@ impl Sphere {
      * @param normal 半球体的法线
      */
     pub fn random_in_hemisphere(normal: &Vector3) -> Vector3 {
-        let in_unit_sphere = Vector3::random_unit_vector();
+        let in_unit_sphere = random_unit_vector();
         let cos_theta = in_unit_sphere.dot(*normal);
         if cos_theta > 1.0 {
             in_unit_sphere
@@ -54,7 +56,7 @@ impl Sphere {
     }
 }
 
-impl Hittable for Sphere {
+impl<M: Material> Hittable for Sphere<M> {
     fn hit(&self, ray: &Ray3, t_min: f32, t_max: f32) -> Option<HitRecord> {
         let oc = ray.origin - self.center;
         let a = ray.direction.length_squared();
@@ -87,7 +89,8 @@ impl Hittable for Sphere {
             t,
             point,
             normal,
-            is_front_face
+            is_front_face,
+            material: &self.material
         })
     }
 }
