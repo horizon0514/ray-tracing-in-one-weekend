@@ -26,10 +26,11 @@ pub fn ray_color(ray: &Ray3, world: &HittableList, max_depth: u32) -> Color {
 
     if let Some(rec) = world.hit(ray, 0.0001, f32::INFINITY) {
         if let Some((attenuation, scattered)) = rec.material.scatter(ray, &rec) {
-            return attenuation.cross(ray_color(&scattered, world, max_depth-1));
+            return attenuation * ray_color(&scattered, world, max_depth-1);
         }
         return Color::new(0.0, 0.0, 0.0);
     }
+
 
     let unit_direction = ray.direction.unit_vector();
 

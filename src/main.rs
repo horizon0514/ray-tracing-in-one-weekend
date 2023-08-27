@@ -78,7 +78,6 @@ fn main() {
     let max_depth = 50;
     // write color 
     for  y in (0..image_height).rev() {
-        print!("\rProgress: [{}%]", (image_height-y)/image_height*100); 
 
         for x in 0..image_width {
             let mut color: Color = Color::new(0.0, 0.0, 0.0);
@@ -89,7 +88,6 @@ fn main() {
 
                 color += ray_color(&ray, &world, max_depth);
             }
-            
             write_color(&mut file, color, sample_count);
         }
     }

@@ -68,6 +68,8 @@ pub fn random_unit_vector() -> Vector3 {
         if v.length_squared() >= 1.0 {
             continue;
         }
+
+        return v.unit_vector();
     }
 }
 
@@ -118,6 +120,17 @@ impl Mul<f32> for Vector3 {
             x: self.x * scalar,
             y: self.y * scalar,
             z: self.z * scalar,
+        }
+    }
+}
+
+impl Mul<Vector3> for Vector3 {
+    type Output = Vector3; // 此处返回类型为Vector3，与self一致，可以省略
+    fn mul(self, vector: Vector3) -> Vector3 {
+        Vector3 {
+            x: self.x * vector.x,
+            y: self.y * vector.y,
+            z: self.z * vector.z,
         }
     }
 }
