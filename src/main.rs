@@ -6,6 +6,7 @@ use vector3::{Color, Vector3, Point3};
 mod color;
 use color::write_color;
 
+use crate::material::{Lambertian, Metal};
 use crate::{ray3::{Ray3, ray_color}, util::random_double};
 mod ray3;
 
@@ -23,6 +24,9 @@ use camera::Camera;
 
 mod util;
 
+mod material;
+use material::Material;
+
 fn main() {
     // Image
     let aspect_ratio = 16.0 / 9.0;
@@ -33,12 +37,33 @@ fn main() {
     // Camera, 位置在原点,朝向为负Z轴
     let camera = Camera::new(aspect_ratio);
 
+    // Material
+    let material_ground = Lambertian {
+        albedo: Color::new(0.8, 0.8, 0.0),
+    };
+    let material_center = Lambertian {
+        albedo: Color::new(0.7, 0.3, 0.3),
+    };
+    let material_left = Metal {
+        albedo: Color::new(0.8, 0.8, 0.8),
+        fuzz: 0.5,
+    };
+    let material_right = Metal {
+        albedo: Color::new(0.8, 0.6, 0.2),
+        fuzz: 0.0,
+    };
+    
     // World
     let mut world = HittableList::new();
-    let sphere = Sphere::new(Vector3 { x: 0.0, y: 0.0, z: -1.0 }, 0.5);
-    let ground = Sphere::new(Vector3 { x: 0.0, y: -100.5, z: -1.0 }, 100.0);
+    let sphere = Sphere::new(Vector3 { x: 0.0, y: 0.0, z: -1.0 }, 0.5, material_center);
+    let ground = Sphere::new(Vector3 { x: 0.0, y: -100.5, z: -1.0 }, 100.0, material_ground);
+    let left= Sphere::new(Vector3 { x: -1.0, y: 0.0, z: -1.0 }, 0.5, material_left);
+    let right = Sphere::new(Vector3 { x: 1.0, y: 0.0, z: -1.0 }, 0.5, material_right);
+
     world.add(Box::new(sphere));
     world.add(Box::new(ground));
+    world.add(Box::new(left));
+    world.add(Box::new(right));
     // Render
 
     let file_name = "image.ppm";

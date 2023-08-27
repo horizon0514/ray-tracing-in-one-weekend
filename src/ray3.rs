@@ -25,13 +25,10 @@ pub fn ray_color(ray: &Ray3, world: &HittableList, max_depth: u32) -> Color {
     }
 
     if let Some(rec) = world.hit(ray, 0.0001, f32::INFINITY) {
-        // 如果命中，则继续构造射线，并且递归计算颜色
-        // 以rec.point 为单位球球心，以rec.normal 为单位球法线，构造一个半球体
-        // 并随机选择一个单位向量
-        let target = rec.point + Sphere::random_in_hemisphere(&rec.normal);
-        // 继续构造反射的ray,并递归计算颜色
-        let r = ray_color(&Ray3::new(rec.point, target - rec.point), world, max_depth - 1);
-        return r * 0.5; // 光线强度衰减50%。在光追中,颜色值代表了光线的强度，而更高的颜色值,代表更强的光线强度
+        if let Some((attenuation, scattered)) = rec.material.scatter(ray, &rec) {
+            return attenuation.cross(ray_color(&scattered, world, max_depth-1));
+        }
+        return Color::new(0.0, 0.0, 0.0);
     }
 
     let unit_direction = ray.direction.unit_vector();

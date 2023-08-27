@@ -45,6 +45,11 @@ impl Vector3 {
         }
     }
 
+    pub fn near_zero(&self) -> bool {
+        let s = 1e-8;
+        self.x.abs() < s && self.y.abs() < s && self.z.abs() < s
+    }
+
     pub fn random() -> Vector3 {
         Vector3 { x: util::random_double(), y: util::random_double(), z: util::random_double() }
     }
@@ -52,17 +57,28 @@ impl Vector3 {
     pub fn random_in_range(min: f32, max: f32) -> Vector3 {
         Vector3 { x: util::random_double_range(min, max), y: util::random_double_range(min, max), z: util::random_double_range(min, max) }
     }
+}
 
-    pub fn random_unit_vector() -> Vector3 {
-        loop {
-            let v = Vector3::random_in_range(-1.0, 1.0);
-            if v.length_squared() >= 1.0 {
-                continue;
-            }
-
-            return v.unit_vector();
+/**
+ * 生成一个随机单位向量
+ */
+pub fn random_unit_vector() -> Vector3 {
+    loop {
+        let v = Vector3::random_in_range(-1.0, 1.0);
+        if v.length_squared() >= 1.0 {
+            continue;
         }
     }
+}
+
+/*
+ * 求反射后的向量
+ * @param v: 原向量
+ * @param n: 反射点的法线
+ * @return 反射后的向量
+*/
+pub fn reflect(v: Vector3, n: Vector3) -> Vector3 {
+    v - n * 2.0 * v.dot(n)
 }
 
 impl Add for Vector3 {
