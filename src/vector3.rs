@@ -59,29 +59,7 @@ impl Vector3 {
     }
 }
 
-/**
- * 生成一个随机单位向量
- */
-pub fn random_unit_vector() -> Vector3 {
-    loop {
-        let v = Vector3::random_in_range(-1.0, 1.0);
-        if v.length_squared() >= 1.0 {
-            continue;
-        }
 
-        return v.unit_vector();
-    }
-}
-
-/*
- * 求反射后的向量
- * @param v: 原向量
- * @param n: 反射点的法线
- * @return 反射后的向量
-*/
-pub fn reflect(v: Vector3, n: Vector3) -> Vector3 {
-    v - n * 2.0 * v.dot(n)
-}
 
 impl Add for Vector3 {
     type Output = Vector3; // 此处返回类型为Vector3，与self一致，可以省略

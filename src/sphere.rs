@@ -1,5 +1,6 @@
 use crate::material::Material;
-use crate::vector3::{Vector3, random_unit_vector};
+use crate::util::random_unit_vector;
+use crate::vector3::{Vector3};
 use crate::{vector3::Point3, ray3::Ray3};
 use crate::hittable::{Hittable, HitRecord};
 

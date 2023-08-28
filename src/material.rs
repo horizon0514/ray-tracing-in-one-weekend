@@ -1,7 +1,8 @@
 use crate::hittable::{Hittable, HitRecord};
 use crate::ray3::Ray3;
 use crate::sphere::Sphere;
-use crate::vector3::{Color, Vector3, random_unit_vector, reflect};
+use crate::util::{random_unit_vector, reflect, refract};
+use crate::vector3::{Color, Vector3 };
 
 
 pub trait Material {
@@ -48,3 +49,28 @@ impl Material for Metal {
     }
 }
     
+
+/**
+ * 绝缘体材质
+ */
+pub struct  Dielectric {
+    pub ir: f32, // Index of Refraction 折射系数
+}
+
+impl Material for  Dielectric {
+    fn scatter(&self, _ray: &Ray3, _rec: &HitRecord) -> Option<(Color, Ray3)> {
+        let attenuation = Color::new(1.0, 1.0, 1.0);
+
+        let refraction_ratio = if _rec.is_front_face {
+            1.0 / self.ir
+        } else {
+            self.ir
+        };
+
+        let unit_direction = _ray.direction.unit_vector();
+
+        let refracted = refract(unit_direction, _rec.normal, refraction_ratio);
+
+        Some((attenuation, Ray3::new(_rec.point, refracted)))
+    }
+}

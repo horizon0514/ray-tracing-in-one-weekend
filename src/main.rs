@@ -6,7 +6,7 @@ use vector3::{Color, Vector3, Point3};
 mod color;
 use color::write_color;
 
-use crate::material::{Lambertian, Metal};
+use crate::material::{Lambertian, Metal, Dielectric};
 use crate::{ray3::{Ray3, ray_color}, util::random_double};
 mod ray3;
 
@@ -41,12 +41,11 @@ fn main() {
     let material_ground = Lambertian {
         albedo: Color::new(0.8, 0.8, 0.0),
     };
-    let material_center = Lambertian {
-        albedo: Color::new(0.7, 0.3, 0.3),
+    let material_center = Dielectric {
+        ir: 1.5,
     };
-    let material_left = Metal {
-        albedo: Color::new(0.8, 0.8, 0.8),
-        fuzz: 0.5,
+    let material_left = Dielectric {
+        ir: 1.5,
     };
     let material_right = Metal {
         albedo: Color::new(0.8, 0.6, 0.2),
