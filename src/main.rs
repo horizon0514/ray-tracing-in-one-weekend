@@ -41,10 +41,13 @@ fn main() {
     let material_ground = Lambertian {
         albedo: Color::new(0.8, 0.8, 0.0),
     };
-    let material_center = Dielectric {
-        ir: 1.5,
+    let material_center = Lambertian {
+        albedo: Color::new(0.1, 0.2, 0.5),
     };
     let material_left = Dielectric {
+        ir: 1.5,
+    };
+    let material_left2 = Dielectric {
         ir: 1.5,
     };
     let material_right = Metal {
@@ -58,11 +61,12 @@ fn main() {
     let ground = Sphere::new(Vector3 { x: 0.0, y: -100.5, z: -1.0 }, 100.0, material_ground);
     let left= Sphere::new(Vector3 { x: -1.0, y: 0.0, z: -1.0 }, 0.5, material_left);
     let right = Sphere::new(Vector3 { x: 1.0, y: 0.0, z: -1.0 }, 0.5, material_right);
-
+    let left2 = Sphere::new(Vector3 { x: -1.0, y: 0.0, z: -1.0 }, -0.4, material_left2);
     world.add(Box::new(sphere));
     world.add(Box::new(ground));
     world.add(Box::new(left));
     world.add(Box::new(right));
+    world.add(Box::new(left2));
     // Render
 
     let file_name = "image.ppm";
