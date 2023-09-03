@@ -1,8 +1,7 @@
-use crate::hittable::{Hittable, HitRecord};
+use crate::hittable::HitRecord;
 use crate::ray3::Ray3;
-use crate::sphere::Sphere;
 use crate::util::{random_unit_vector, reflect, refract, self, random_double};
-use crate::vector3::{Color, Vector3 };
+use crate::vector3::Color;
 
 
 pub trait Material {

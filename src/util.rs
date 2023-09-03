@@ -59,3 +59,7 @@ pub fn refract(v: Vector3, n: Vector3, ni_over_nt: f32) -> Vector3 {
     let r_out_parallel = n * (-(1.0 - r_out_perp.length_squared()).abs().sqrt()) ;
     r_out_perp + r_out_parallel
 }
+
+pub fn degree_to_radians(degrees: f32) -> f32 {
+    degrees * std::f32::consts::PI / 180.0
+}
