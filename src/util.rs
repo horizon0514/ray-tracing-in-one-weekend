@@ -49,6 +49,19 @@ pub fn random_unit_vector() -> Vector3 {
     }
 }
 
+/**
+ * generate a random point in the unit circle disk
+ */
+pub fn random_in_unit_disk() -> Vector3 {
+    loop {
+        let p = Vector3::new(random_double_range(-1.0, 1.0), random_double_range(-1.0, 1.0), 0.0);
+        if p.length_squared() >= 1.0 {
+            continue;
+        }
+        return p;
+    }
+}
+
 /*
  * 求反射后的向量
  * @param v: 原向量
