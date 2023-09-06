@@ -2,7 +2,6 @@ use std::fs;
 
 mod vector3;
 use vector3::{Color, Vector3, Point3};
-mod color;
 
 use crate::material::{Lambertian, Metal, Dielectric};
 mod ray3;
@@ -24,12 +23,17 @@ mod material;
 fn main() {
     // Image
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 400;
-    let image_height = (image_width as f32 / aspect_ratio) as i32;
-    println!("image_width: {}, image_height: {}", image_width, image_height);
+    let image_width = 400_f32;
 
     // Camera, 位置在原点,朝向为负Z轴
-    let camera = Camera::new(aspect_ratio, 20.0, Point3::new(-2.0, 2.0, 1.0), Point3::new(0.0, 0.0, -1.0), Vector3::new(0.0, 1.0, 0.0));
+    let camera = Camera::new(
+        aspect_ratio, 
+        90.0,
+        Point3::new(0.0, 0.0,0.0), 
+        Point3::new(0.0, 0.0, -1.0), 
+        Vector3::new(0.0, 1.0, 0.0), 
+        image_width
+    );
 
     // Material
     let material_ground = Lambertian {

@@ -79,7 +79,8 @@ impl<M: Material> Hittable for Sphere<M> {
         }
 
         let point = ray.at(t);
-        let mut normal = (point - self.center).unit_vector();
+        // To compatible the negative radius, normal must be / self.radius, DO NOT use normal.unit_vector()
+        let mut normal = (point - self.center) / self.radius;
         let is_front_face = ray.direction.dot(normal) < 0.0;
 
         if !is_front_face {

@@ -86,7 +86,7 @@ impl Material for  Dielectric {
 
         let unit_direction = _ray.direction.unit_vector();
 
-        let cos_theta = util::clamp(unit_direction.dot(_rec.normal), -1.0, 1.0);
+        let cos_theta = f32::min(-unit_direction.dot(_rec.normal), 1.0);
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
 
         // if refraction_ratio * sin_theta > 1.0, it means the ray cannot refract

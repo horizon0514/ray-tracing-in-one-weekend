@@ -1,6 +1,6 @@
 use std::fs::File;
 use std::io::Write;
-use crate::{vector3::{Vector3, Point3, Color}, ray3::Ray3, util::{degree_to_radians, self}, hittable_list::HittableList, hittable::Hittable, color::write_color};
+use crate::{vector3::{Vector3, Point3, Color}, ray3::Ray3, util::{degree_to_radians, self, write_color}, hittable_list::HittableList, hittable::Hittable};
 
 pub struct Camera {
     aspect_ratio: f32,
@@ -8,10 +8,15 @@ pub struct Camera {
     lower_left_corner: Point3,
     horizontal: Vector3,
     vertical: Vector3,
+    pixel_delta_u: Vector3,
+    pixel_delta_v: Vector3,
+    pixel_center_lower_left_corner: Point3,
 }
 
 impl Camera {
-    pub fn new(aspect_ratio: f32, v_fov: f32, look_from: Point3, look_at: Point3, v_up: Vector3) -> Camera {
+    pub fn new(aspect_ratio: f32, v_fov: f32, look_from: Point3, look_at: Point3, v_up: Vector3, image_width: f32) -> Camera {
+        let image_height = image_width / aspect_ratio;
+
         // let v_fov = 90.0; // the vertical field-of-view angle
         let focal_length = (look_at - look_from).length();// 焦距，也就是相机距离viewport的距离
 
@@ -29,15 +34,20 @@ impl Camera {
         let origin = look_from;
         let horizontal = u * viewport_width;
         let vertical = v * viewport_height;
+        let pixel_delta_u = horizontal / image_width;
+        let pixel_delta_v = vertical / image_height;
         // viewport 的左下角
         let lower_left_corner = origin - horizontal / 2.0 - vertical / 2.0 - w * focal_length;
-
+        let pixel_center_lower_left_corner = lower_left_corner + (pixel_delta_u + pixel_delta_v) * 0.5;
         Camera {
             aspect_ratio,
             origin,
             lower_left_corner,
             horizontal,
             vertical,
+            pixel_delta_u,
+            pixel_delta_v,
+            pixel_center_lower_left_corner,
         }
     }
 
@@ -57,8 +67,8 @@ impl Camera {
             for x in 0..image_width {
                 let mut color: Color = Color::new(0.0, 0.0, 0.0);
                 for _ in 0..sample_count {
-                    let u = ((x as f32) + util::random_double()) / (image_width-1) as f32;
-                    let v = (y as f32 + util::random_double()) / (image_height-1) as f32;
+                    let u = ((x as f32) + util::random_double());
+                    let v = (y as f32 + util::random_double());
                     let ray = self.get_ray(u, v);
 
                     color += self.ray_color(&ray, world, max_depth);
@@ -69,7 +79,17 @@ impl Camera {
     }
 
     pub fn get_ray(&self, u: f32, v: f32) -> Ray3 {
-        Ray3::new(self.origin, self.lower_left_corner + self.horizontal*u + self.vertical*v - self.origin)
+        let pixel_center = self.pixel_center_lower_left_corner + self.pixel_delta_u * u + self.pixel_delta_v * v;
+        let pixel_sample = pixel_center + self.pixel_sample_square();
+        Ray3::new(self.origin, pixel_sample - self.origin)
+    }
+
+    // return a random square vector on the pixel
+    fn pixel_sample_square(&self) -> Vector3 {
+        let px = util::random_double() * 0.5;
+        let py = util::random_double() * 0.5;
+
+        self.pixel_delta_u * px + self.pixel_delta_v * py
     }
 
     pub fn ray_color(&self, ray: &Ray3, world: &HittableList, max_depth: u32) -> Color {
